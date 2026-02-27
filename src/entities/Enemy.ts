@@ -8,7 +8,7 @@ export default class Enemy extends Phaser.Physics.Arcade.Sprite {
   private detectionRange: number = 200;
   private attackRange: number = 40;
   private attackCooldown: boolean = false;
-  private state: 'idle' | 'patrol' | 'chase' | 'attack' = 'idle';
+  private enemyState: 'idle' | 'patrol' | 'chase' | 'attack' = 'idle';
   private stateTimer: number = 0;
 
   constructor(scene: Phaser.Scene, x: number, y: number, player: Player) {
@@ -35,7 +35,7 @@ export default class Enemy extends Phaser.Physics.Arcade.Sprite {
     );
 
     // State machine
-    switch (this.state) {
+    switch (this.enemyState) {
       case 'idle':
         this.handleIdleState(distanceToPlayer);
         break;
@@ -155,8 +155,8 @@ export default class Enemy extends Phaser.Physics.Arcade.Sprite {
     });
   }
 
-  private changeState(newState: typeof this.state): void {
-    this.state = newState;
+  private changeState(newState: typeof this.enemyState): void {
+    this.enemyState = newState;
     this.stateTimer = 1000;
   }
 

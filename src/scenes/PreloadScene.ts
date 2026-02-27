@@ -51,7 +51,7 @@ export default class PreloadScene extends Phaser.Scene {
 
   private createPlaceholderAssets(): void {
     // Create simple colored rectangles as placeholders for sprites
-    const graphics = this.make.graphics({ x: 0, y: 0, add: false });
+    const graphics = this.make.graphics({ x: 0, y: 0 });
 
     // Player
     graphics.fillStyle(0x00ff00, 1);
