@@ -94,12 +94,12 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
     const originalTint = this.tintTopLeft;
     this.setTint(0xffff00); // Yellow flash for attack
     
-    // Create attack hitbox in front of player
+    // Create attack hitbox aimed toward the mouse cursor
+    const pointer = this.scene.input.activePointer;
+    const angle = Phaser.Math.Angle.Between(this.x, this.y, pointer.worldX, pointer.worldY);
     const attackRange = 40;
-    const attackX = this.x + (this.body!.velocity.x > 0 ? attackRange : 
-                             this.body!.velocity.x < 0 ? -attackRange : 0);
-    const attackY = this.y + (this.body!.velocity.y > 0 ? attackRange : 
-                             this.body!.velocity.y < 0 ? -attackRange : 0);
+    const attackX = this.x + Math.cos(angle) * attackRange;
+    const attackY = this.y + Math.sin(angle) * attackRange;
 
     // Emit attack event for game scene to handle
     this.scene.events.emit('playerAttack', attackX, attackY);
