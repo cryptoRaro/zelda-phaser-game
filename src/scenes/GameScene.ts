@@ -10,6 +10,9 @@ export default class GameScene extends Phaser.Scene {
   private walls!: Phaser.Physics.Arcade.StaticGroup;
   private keys: number = 0;
   private coins: number = 0;
+  private darkness!: Phaser.GameObjects.RenderTexture;
+  private lightSprite!: Phaser.GameObjects.Image;
+  private readonly LIGHT_SIZE: number = 350;
 
   constructor() {
     super({ key: 'GameScene' });
@@ -48,6 +51,9 @@ export default class GameScene extends Phaser.Scene {
     // Camera follow player
     this.cameras.main.startFollow(this.player, true, 0.1, 0.1);
     this.cameras.main.setZoom(1);
+
+    // Lighting
+    this.setupLighting();
   }
 
   update(time: number, delta: number): void {
@@ -55,6 +61,9 @@ export default class GameScene extends Phaser.Scene {
 
     // Check for interaction with chests
     this.checkChestInteraction();
+
+    // Update torch lighting each frame
+    this.updateLighting();
   }
 
   private createDungeon(): void {
@@ -237,6 +246,51 @@ export default class GameScene extends Phaser.Scene {
     enemy: Phaser.Types.Physics.Arcade.GameObjectWithBody
   ): void {
     // Damage is handled in Enemy class during attack
+  }
+
+  private setupLighting(): void {
+    const size = this.LIGHT_SIZE;
+
+    // Build a radial-gradient canvas texture (white centre → transparent edge)
+    // used as the "erase stamp" each frame so the centre is fully revealed
+    // and the edge fades smoothly into darkness.
+    const lightTex = this.textures.createCanvas('torchLight', size, size) as Phaser.Textures.CanvasTexture;
+    const ctx = lightTex.context;
+    const cx = size / 2;
+    const gradient = ctx.createRadialGradient(cx, cx, 0, cx, cx, cx);
+    gradient.addColorStop(0,    'rgba(255,255,255,1)');
+    gradient.addColorStop(0.4,  'rgba(255,255,255,0.9)');
+    gradient.addColorStop(0.72, 'rgba(255,255,255,0.35)');
+    gradient.addColorStop(1,    'rgba(255,255,255,0)');
+    ctx.fillStyle = gradient;
+    ctx.fillRect(0, 0, size, size);
+    lightTex.refresh();
+
+    // Off-scene image used purely as an erase stamp on the RenderTexture
+    this.lightSprite = this.make.image({ key: 'torchLight', add: false });
+
+    // Full-screen darkness overlay fixed to the camera
+    const { width, height } = this.scale;
+    this.darkness = this.add.renderTexture(0, 0, width, height)
+      .setScrollFactor(0)
+      .setDepth(80);
+  }
+
+  private updateLighting(): void {
+    if (!this.player.active) return;
+
+    const cam = this.cameras.main;
+    const px = this.player.x - cam.worldView.x;
+    const py = this.player.y - cam.worldView.y;
+    const half = this.LIGHT_SIZE / 2;
+
+    // Subtle per-frame flicker
+    const flicker = 0.93 + Math.random() * 0.07;
+    this.lightSprite.setScale(flicker);
+
+    this.darkness.clear();
+    this.darkness.fill(0x000000, 0.82);
+    this.darkness.erase(this.lightSprite, px - half, py - half);
   }
 
   private handlePlayerDeath(): void {
