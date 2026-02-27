@@ -34,13 +34,19 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
     // Set up size
     this.setSize(28, 28);
     this.setOffset(2, 2);
+
+    // Left mouse button attacks
+    scene.input.on('pointerdown', (pointer: Phaser.Input.Pointer) => {
+      if (pointer.leftButtonDown() && !this.attackCooldown) {
+        this.attack();
+      }
+    });
   }
 
   update(): void {
     if (!this.active) return;
 
     this.handleMovement();
-    this.handleAttack();
   }
 
   private handleMovement(): void {
@@ -78,14 +84,6 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
       this.setTint(0x88ff88); // Green tint for down
     } else {
       this.setTint(0x00ff00); // Bright green when still
-    }
-  }
-
-  private handleAttack(): void {
-    const spaceKey = this.scene.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
-    
-    if (Phaser.Input.Keyboard.JustDown(spaceKey) && !this.attackCooldown) {
-      this.attack();
     }
   }
 
