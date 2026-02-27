@@ -70,6 +70,7 @@ export default class GameScene extends Phaser.Scene {
     for (let x = 0; x < roomWidth; x++) {
       const wall = this.walls.create(x * tileSize, 0, 'wall');
       wall.setSize(tileSize, tileSize);
+      wall.setDepth(1);
       wall.refreshBody();
     }
 
@@ -77,6 +78,7 @@ export default class GameScene extends Phaser.Scene {
     for (let x = 0; x < roomWidth; x++) {
       const wall = this.walls.create(x * tileSize, (roomHeight - 1) * tileSize, 'wall');
       wall.setSize(tileSize, tileSize);
+      wall.setDepth(1);
       wall.refreshBody();
     }
 
@@ -84,6 +86,7 @@ export default class GameScene extends Phaser.Scene {
     for (let y = 1; y < roomHeight - 1; y++) {
       const wall = this.walls.create(0, y * tileSize, 'wall');
       wall.setSize(tileSize, tileSize);
+      wall.setDepth(1);
       wall.refreshBody();
     }
 
@@ -91,6 +94,7 @@ export default class GameScene extends Phaser.Scene {
     for (let y = 1; y < roomHeight - 1; y++) {
       const wall = this.walls.create((roomWidth - 1) * tileSize, y * tileSize, 'wall');
       wall.setSize(tileSize, tileSize);
+      wall.setDepth(1);
       wall.refreshBody();
     }
 
@@ -100,6 +104,7 @@ export default class GameScene extends Phaser.Scene {
       const y = Phaser.Math.Between(3, roomHeight - 4) * tileSize;
       const wall = this.walls.create(x, y, 'wall');
       wall.setSize(tileSize, tileSize);
+      wall.setDepth(1);
       wall.refreshBody();
     }
 
